@@ -1,13 +1,15 @@
 # ISHOCON2 の結果描画用のポータルページ (イベント用)
 
+inspired from [iwashi/private-isu-portal](https://github.com/iwashi/private-isu-portal)
+
 ## 本リポジトリでできること
 
-Firebaseをデータストアとして利用して、保存したデータを描画するためのポータルページです。
+Firebaseをデータストアとして利用して、保存したデータを描画するためのポータルページです。  
 ISHOCON2 を個人ではなく、社内ISUCONのように複数人で取り組む時に使用すると便利です。
 
 以下のようなグラフをリアルタイムで描画します。
 
-![Portalイメージ](images/graph.png)
+![Portalイメージ](https://user-images.githubusercontent.com/1732016/44306652-5e91bd00-a3ce-11e8-91ae-24b93ea77632.png)
 
 ## 使い方
 
@@ -47,4 +49,3 @@ Firebase側の`.read`は認証が無い前提で利用しています。
 
 もし認証を追記される場合は、[公式ドキュメント](https://www.firebase.com/docs/web/guide/login/password.html) を参考に、
 Firebase接続部分のコードの変更が必要です。
-
