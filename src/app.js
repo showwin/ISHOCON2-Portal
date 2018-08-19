@@ -74,6 +74,7 @@ async function draw() {
 
     drawChart();
     drawBarChart();
+    drawHistogram();
 
     // 折れ線グラフを描画する
     function drawChart() {
@@ -86,7 +87,7 @@ async function draw() {
 
       dataTable.addRows(arrayToDraw);
 
-      const options = {title: 'TD ISUCON Score', height:  320};
+      const options = {title: 'Score', height: 320};
       const chart = new google.visualization.LineChart(document.getElementById('score'));
 
       chart.draw(dataTable, options);
@@ -94,16 +95,14 @@ async function draw() {
 
     // 棒グラフを描画する
     function drawBarChart() {
-      const arrayToDrawBar = [];
+      var arrayToDrawBar = [];
 
       teams.forEach((teamName, i) => {
         arrayToDrawBar.push([teamName, arrayToDraw[arrayToDraw.length - 1][i + 1]]);
       });
 
-      arrayToDrawBar.unshift(['チーム名', 'スコア']);
-
       arrayToDrawBar.sort((a, b) => {
-        if (a[1] < b[1]) {
+        if (a[1] <= b[1]) {
           return 1;
         } else if (a[1] > b[1]) {
           return -1;
@@ -111,15 +110,31 @@ async function draw() {
           return 0;
         }
       });
+      // 上位10人に絞る
+      arrayToDrawBar = arrayToDrawBar.slice(0, 10)
+
+      arrayToDrawBar.unshift(['チーム名', 'スコア']);
 
       const dataBar = new google.visualization.arrayToDataTable(arrayToDrawBar);
       const barChart = new google.visualization.BarChart(document.getElementById('barChart'));
 
-      const options = {
-        height: 320 
-      };
-
+      const options = {title: 'Score', height:  320};
       barChart.draw(dataBar, options);
+    }
+
+    // ヒストグラムを描画する
+    function drawHistogram() {
+      const arrayToDrawHistogram = [];
+
+      teams.forEach((teamName, i) => {
+        arrayToDrawHistogram.push([teamName, arrayToDraw[arrayToDraw.length - 1][i + 1]]);
+      });
+
+      arrayToDrawHistogram.unshift(['チーム名', 'スコア']);
+
+      const dataHistogram = new google.visualization.arrayToDataTable(arrayToDrawHistogram);
+      const chartHistogram = new google.visualization.Histogram(document.getElementById('histogram'));
+      chartHistogram.draw(dataHistogram, {});
     }
 
     const timeElement = document.getElementById('time');
@@ -131,14 +146,14 @@ async function draw() {
 }
 
 // XXXXをご自身のFirebaseプロジェク卜のURLに変更してください
-const baseUrl = 'https://XXXX.firebaseio.com/'; 
+const baseUrl = 'https://ishocon2.firebaseio.com/';
 const url = `${baseUrl}teams/.json`;
 const myFirebaseRef = new Firebase(baseUrl);
 
 // 初回描画
 google.setOnLoadCallback(draw);
 
-// 次回以降 
+// 次回以降
 myFirebaseRef.child("teams/").on("child_changed", () => {
   draw();
 });

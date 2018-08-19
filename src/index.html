@@ -1,22 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>ISUCON Portal</title>
-</head>
-<body>
-<h2>ISUCON Portal</h2>
-<h2>スコア経過</h2>
-<div id="score">
-</div>
+  <head>
+    <meta charset="UTF-8">
+    <title>ISHOCON2 Portal</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="./signin.css" rel="stylesheet">
+  </head>
 
-<h2>最新スコア</h2>
-<div id="barChart">
-</div>
-<div id="time"></div>
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script src="bundle.js"></script>
-</body>
+  <body>
+    <div class="register text-center" style="display: none;">
+      <form class="form-signin">
+        <img class="mb-4" src="https://s3-ap-northeast-1.amazonaws.com/ishocon2-portal/ishocon_trans.png" alt="" height="240">
+        <h1 class="h3 mb-3 font-weight-normal">Register User</h1>
+        <label for="inputEmail" class="sr-only">Username</label>
+        <input type="text" id="inputUsername" class="form-control username" placeholder="Username" required autofocus>
+        <label for="inputPassword" class="sr-only">Instance IP Address</label>
+        <input type="text" id="inputIPAddress" class="form-control address" placeholder="Instance IP Address" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="register()">Register</button>
+      </form>
+    </div>
+
+    <div class="dashboard" style="display: none;">
+      <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <h5 class="my-0 mr-md-auto font-weight-normal">ISHOCON2 Portal</h5>
+        <button class="btn btn-outline-danger" onclick="deregister()">登録情報変更</button>
+      </div>
+
+      <div class="container">
+
+        <div class="row">
+          <div class="col-md-12">
+            <h3 class="pb-3 mb-4 border-bottom">
+              ベンチマーカー
+            </h3>
+            <div class="card flex-md-row mb-4 shadow-sm h-md-250">
+              <div class="card-body d-flex flex-column align-items-start">
+                <h3 class="mb-0">
+                  <a class="text-dark" href="#">ベンチマーカー ログ</a>
+                </h3>
+                <div class="mb-1 text-muted"></div>
+                <p class="card-text mb-auto">ベンチマーカーを実行すると、ここにログが表示されます。</p>
+              </div>
+              <div class="card-body d-flex flex-column align-items-start"
+                   style="width: 200px; background-color: #f5f5f5;">
+                <p class="d-inline-block mb-2">Username: <strong id=registeredUsername></strong></p>
+                <p class="d-inline-block mb-2">IP Address: <strong id=registeredIPAddress></strong></p>
+                <button class="btn btn-lg btn-success btn-block" type="submit" onclick="register()">ベンチマーカー実行</button>
+              </div>
+            </div>
+
+            <h3 class="pb-3 mb-4 border-bottom">
+              ランキング 上位10人
+            </h3>
+            <div id="barChart">
+            </div>
+
+            <h3 class="pb-3 mb-4 border-bottom">
+              スコア経過
+            </h3>
+            <div id="score">
+            </div>
+
+            <h3 class="pb-3 mb-4 border-bottom">
+              全体の点数分布
+            </h3>
+            <div id="histogram">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+      <script src="../dist/bundle.js"></script>
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+      <script>
+        const STRAGE_USERNAME = "ISHOCON2_Username";
+        const STRAGE_IPADDRESS = "ISHOCON2_IPAddress";
+
+        // 登録
+        function register() {
+          const username = $("input#inputUsername")[0].value;
+          const ipAddress = $("input#inputIPAddress")[0].value;
+          localStorage.setItem(STRAGE_USERNAME, username);
+          localStorage.setItem(STRAGE_IPADDRESS, ipAddress);
+          location.reload();
+        }
+
+        // 登録解除
+        function deregister() {
+          localStorage.removeItem(STRAGE_USERNAME);
+          localStorage.removeItem(STRAGE_IPADDRESS);
+          location.reload();
+        }
+
+        function registeredUsername() {
+          return localStorage.getItem(STRAGE_USERNAME);
+        }
+
+        function registeredIPAddress() {
+          return localStorage.getItem(STRAGE_IPADDRESS);
+        }
+
+        // アカウント作成済みかどうか判定
+        username = registeredUsername();
+        if (username == null) {
+          $("div.dashboard").hide();
+          $("div.register").show();
+        } else {
+          $("div.dashboard").show();
+          $("div.register").hide();
+
+          const username = registeredUsername();
+          const address = registeredIPAddress();
+          $("strong#registeredUsername").text(username);
+          $("strong#registeredIPAddress").text(address);
+        }
+      </script>
+    <div>
+  </body>
 </html>
-
-
