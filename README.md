@@ -35,9 +35,7 @@ JSONのPOST先URLは、 `https://XXXX.firebaseio.com/teams/:チーム名.json` �
   "success":1434,
   "fail":0,
   "messages":[],
-  "timestamp":{  
-    ".sv":"timestamp"
-  }
+  "timestamp":1534655249667
 }
 ```
 
