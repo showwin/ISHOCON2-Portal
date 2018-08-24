@@ -39,13 +39,36 @@
                   <a class="text-dark" href="#">ベンチマーカー ログ</a>
                 </h3>
                 <div class="mb-1 text-muted"></div>
-                <p class="card-text mb-auto">ベンチマーカーを実行すると、ここにログが表示されます。</p>
+                <div id="log">
+                  <p>ベンチマーカーを実行すると、ここにログが表示されます。</p>
+                </div>
               </div>
               <div class="card-body d-flex flex-column align-items-start"
                    style="width: 200px; background-color: #f5f5f5;">
                 <p class="d-inline-block mb-2">Username: <strong id=registeredUsername></strong></p>
                 <p class="d-inline-block mb-2">IP Address: <strong id=registeredIPAddress></strong></p>
-                <button class="btn btn-lg btn-success btn-block" type="submit" onclick="register()">ベンチマーカー実行</button>
+                <p class="d-inline-block mb-2">Workload:
+                  <select name="workload">
+                    <option value="4" selected>4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                  </select>
+                </p>
+                <button id="run" class="btn btn-lg btn-success btn-block" type="submit" onclick="runBench()">ベンチマーカー実行</button>
               </div>
             </div>
 
@@ -71,14 +94,16 @@
       </div>
 
       <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-      <script src="../dist/bundle.js"></script>
-      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="./bundle.js"></script>
+      <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
       <script>
         const STRAGE_USERNAME = "ISHOCON2_Username";
         const STRAGE_IPADDRESS = "ISHOCON2_IPAddress";
+
+        const POLLLING_INVERVAL = 5000; //5s
 
         // 登録
         function register() {
@@ -104,6 +129,60 @@
           return localStorage.getItem(STRAGE_IPADDRESS);
         }
 
+        // メッセージ取得
+        function getMessage() {
+          username = registeredUsername()
+          $.ajax({
+            type : "GET",
+            url : "https://ishocon2.firebaseio.com/messages/" + username + ".json",
+            content : "application/json",
+            dataType : "json",
+          }).done(function(data) {
+            $('div#log').html("")
+            if (data === null) {
+              $('div#log').append('<p>ベンチマーカーを実行すると、ここにログが表示されます。</p>');
+            } else {
+              Object.keys(data).forEach(elm => {
+                message = data[elm]['content']
+                timestamp = data[elm]['timestamp'] * 1000
+                datetime = new Date(timestamp)
+                var hour_str = datetime.getHours();
+                var minute_str = ('00' + datetime.getMinutes()).slice(-2);
+                var second_str = ('00' + datetime.getSeconds()).slice(-2);
+                $('div#log').append('<p>' + hour_str + ':' + minute_str + ':' + second_str + ' ' + message + '</p>');
+              });
+            }
+          }).fail(function(jqXHR, textStatus) {
+            console.log("Failed to get message.")
+          });
+        }
+
+        function runBench() {
+          $('div#log').html("")
+          ip = registeredIPAddress()
+          username = registeredUsername()
+          data = {'ip': ip, 'workload': 4, 'name': username}
+          $.ajax({
+            type: "POST",
+            url: "http://ISHOCON2-LB-1946765794.ap-northeast-1.elb.amazonaws.com/run",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: "json",
+          }).done(function(data) {
+            console.log("POST /run")
+          });
+          $('button#run').prop("disabled", true);
+          window.setTimeout(function() {$('button#run').prop("disabled", false)}, 70000);
+        }
+
+        // メッセージのpolling
+        $(function() {
+          (function polling() {
+            getMessage();
+            window.setTimeout(polling, POLLLING_INVERVAL);
+          }());
+        });
+
         // アカウント作成済みかどうか判定
         username = registeredUsername();
         if (username == null) {
@@ -117,6 +196,7 @@
           const address = registeredIPAddress();
           $("strong#registeredUsername").text(username);
           $("strong#registeredIPAddress").text(address);
+          getMessage()
         }
       </script>
     <div>

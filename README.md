@@ -17,11 +17,21 @@ ISHOCON2 を個人ではなく、社内ISUCONのように複数人で取り組�
 その後、 `src/app.js` にある以下の行をご自身のFirebaseアカウントに変更してください。
 
 ```
-const baseUrl = 'https://XXXX.firebaseio.com/'; 
+const baseUrl = 'https://XXXX.firebaseio.com/';
 ```
 
 変更が完了したら、 `webpack` コマンドにて、ビルドすれば `dist` 配下に成果物が出力されます。
 dist配下に出力された、html/js を任意のWebサーバにデプロイいただければそのままご利用いただけます。
+
+### versions
+
+```
+$ node --version
+v9.11.1
+
+$ webpack --help
+webpack 1.15.0
+```
 
 ## 備考
 

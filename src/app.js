@@ -57,7 +57,7 @@ async function draw() {
 
     // タイムスタンプに対応するスコアを描画用の配列に入れる
     timeStamps.sort().forEach((timestamp, i) => {
-      arrayToDraw.push([new Date(timestamp)]);
+      arrayToDraw.push([new Date(timestamp * 1000)]);
       teams.forEach((teamName, k) => {
         let t = 0;
         Object.values(jsonResponse[teamName]).forEach(result => {
@@ -136,10 +136,6 @@ async function draw() {
       const chartHistogram = new google.visualization.Histogram(document.getElementById('histogram'));
       chartHistogram.draw(dataHistogram, {});
     }
-
-    const timeElement = document.getElementById('time');
-    timeElement.innerHTML = new Date();
-
   } catch (error) {
     console.error(error);
   }
