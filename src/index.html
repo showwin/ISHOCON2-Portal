@@ -66,6 +66,8 @@
                     <option value="18">18</option>
                     <option value="19">19</option>
                     <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
                   </select>
                 </p>
                 <button id="run" class="btn btn-lg btn-success btn-block" type="submit" onclick="runBench()">ベンチマーカー実行</button>
@@ -102,6 +104,8 @@
       <script>
         const STRAGE_USERNAME = "ISHOCON2_Username";
         const STRAGE_IPADDRESS = "ISHOCON2_IPAddress";
+        const FIREBASE_URL = "https://xxxx.firebaseio.com/";
+        const BENCHMARKER_URL = "http://xxxxxx/";
 
         const POLLLING_INVERVAL = 5000; //5s
 
@@ -134,7 +138,7 @@
           username = registeredUsername()
           $.ajax({
             type : "GET",
-            url : "https://ishocon2.firebaseio.com/messages/" + username + ".json",
+            url : FIREBASE_URL + "messages/" + username + ".json",
             content : "application/json",
             dataType : "json",
           }).done(function(data) {
@@ -165,7 +169,7 @@
           data = {'ip': ip, 'workload': workload, 'name': username}
           $.ajax({
             type: "POST",
-            url: "http://ISHOCON2-LB-1946765794.ap-northeast-1.elb.amazonaws.com/run",
+            url: BENCHMARKER_URL + "run",
             data: JSON.stringify(data),
             contentType: 'application/json',
             dataType: "json",
