@@ -7,17 +7,35 @@ inspired from [iwashi/private-isu-portal](https://github.com/iwashi/private-isu-
 Firebaseをデータストアとして利用して、保存したデータを描画するためのポータルページです。  
 ISHOCON2 を個人ではなく、社内ISUCONのように複数人で取り組む時に使用すると便利です。
 
-以下のようなグラフをリアルタイムで描画します。
+### ログインページ
+<img width="783" alt="screen shot 2018-08-26 at 23 00 01" src="https://user-images.githubusercontent.com/1732016/44628918-d25e3780-a983-11e8-8ef0-2f12dd42c8d9.png">
+
+
+### ベンチマーカーの実行ログ
+<img width="1531" alt="screen shot 2018-08-25 at 15 33 35" src="https://user-images.githubusercontent.com/1732016/44628902-988d3100-a983-11e8-8126-fdd03a92c864.png">
+
+
+### リアルタイムな結果表示
 
 ![Portalイメージ](https://user-images.githubusercontent.com/1732016/44306652-5e91bd00-a3ce-11e8-91ae-24b93ea77632.png)
 
 ## 使い方
 
 本リポジトリを `git clone` したのち、 `npm install` で関連モジュールをインストールしてください。
-その後、 `src/app.js` にある以下の行をご自身のFirebaseアカウントに変更してください。
+その後、 `src/app.js` と `src/index.html` にある以下の行をご自身のFirebaseアカウントに変更してください。
 
 ```
 const baseUrl = 'https://XXXX.firebaseio.com/';
+```
+
+```
+const FIREBASE_URL = "https://xxxx.firebaseio.com/";
+```
+
+ベンチマーカーのURLは `src/index.html` で設定してください。
+
+```
+const BENCHMARKER_URL = "http://xxxxxx/";
 ```
 
 変更が完了したら、 `webpack` コマンドにて、ビルドすれば `dist` 配下に成果物が出力されます。
@@ -42,11 +60,7 @@ JSONのPOST先URLは、 `https://XXXX.firebaseio.com/teams/:チーム名.json` �
 
 ```
 {  
-  "pass":true,
   "score":18000,
-  "success":1434,
-  "fail":0,
-  "messages":[],
   "timestamp":1534655249667
 }
 ```
